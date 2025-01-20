@@ -142,7 +142,7 @@ public class CChatModEvents {
         return minecraft.level != null ? minecraft.level.getGameTime() : 0;
     }
 
-    public static class ChatMessage {
+    private static class ChatMessage {
         private final String text;
         private final ResourceLocation icon;
         private final long endTick;
