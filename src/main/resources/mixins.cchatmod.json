@@ -1,0 +1,11 @@
+{
+  "minVersion": "0.7.11",
+  "compatibilityLevel": "JAVA_17",
+  "required": true,
+  "package": "net.cchat.cchatmod.mixins",
+  "refmap": "mixins.cchatmod.refmap.json",
+  "mixins": [
+
+  ],
+  "server": []
+}
