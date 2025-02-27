@@ -10,7 +10,6 @@ public class Task {
     private String author;
     private TaskStatus status;
 
-    // Конструктор по умолчанию (требуется для Gson)
     public Task() {
         this.objectives = new ArrayList<>();
         this.status = TaskStatus.ACTIVE;
