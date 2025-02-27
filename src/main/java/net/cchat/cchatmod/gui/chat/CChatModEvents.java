@@ -1,4 +1,4 @@
-package net.cchat.cchatmod;
+package net.cchat.cchatmod.gui.chat;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -75,7 +75,7 @@ public class CChatModEvents {
         return true;
     }
 
-    protected void adjustScrollOffset(int delta) {
+    public void adjustScrollOffset(int delta) {
         historyScrollOffset = Math.max(0, Math.min(historyScrollOffset + delta, chatHistory.size() - 1));
     }
 

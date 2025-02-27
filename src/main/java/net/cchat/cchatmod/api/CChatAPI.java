@@ -1,5 +1,6 @@
-package net.cchat.cchatmod;
+package net.cchat.cchatmod.api;
 
+import net.cchat.cchatmod.gui.chat.CChatModEvents;
 import net.minecraft.resources.ResourceLocation;
 
 public class CChatAPI {

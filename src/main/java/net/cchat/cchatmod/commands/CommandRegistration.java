@@ -1,5 +1,6 @@
-package net.cchat.cchatmod;
+package net.cchat.cchatmod.commands;
 
+import net.cchat.cchatmod.CChatMod;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -8,6 +9,6 @@ import net.minecraftforge.fml.common.Mod;
 public class CommandRegistration {
     @SubscribeEvent
     public static void onCommandRegistration(RegisterCommandsEvent event) {
-        CChatCommand.register(event.getDispatcher());
+        CommandTask.register(event.getDispatcher());
     }
 }

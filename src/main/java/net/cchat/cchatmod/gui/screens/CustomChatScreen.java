@@ -1,5 +1,6 @@
-package net.cchat.cchatmod;
+package net.cchat.cchatmod.gui.screens;
 
+import net.cchat.cchatmod.gui.chat.CChatModEvents;
 import net.minecraft.client.gui.screens.ChatScreen;
 
 public class CustomChatScreen extends ChatScreen {
