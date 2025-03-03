@@ -6,7 +6,9 @@
   "refmap": "mixins.cchatmod.refmap.json",
   "mixins": [
     "ChatSystemMixin",
-    "ChatListenerMixin"
+    "ChatListenerMixin",
+    "ChatEnterMixin",
+    "ChatOpenMixin"
   ],
   "injectors": {
     "defaultRequire": 1
