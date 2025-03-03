@@ -3,7 +3,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
-
+    id 'org.spongepowered.mixin' version '0.7.+'
 }
 
 version = mod_version
@@ -39,6 +39,7 @@ minecraft {
 
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
+            //property 'mixin.env.disableRefMap', 'true'
         }
 
         server {
@@ -62,7 +63,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.minecraftforge.net'}
     maven { url = 'https://repo.spongepowered.org/maven'}
     mavenCentral()
 }
@@ -70,7 +71,9 @@ repositories {
 dependencies {
     implementation 'com.google.code.gson:gson:2.10'
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     implementation "org.spongepowered:mixin:0.8.5"
+    //implementation "org.spongepowered:mixin:0.8.5"
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -99,12 +102,18 @@ tasks.named('jar', Jar).configure {
                 'Implementation-Version'  : project.jar.archiveVersion,
                 'Implementation-Vendor'   : mod_authors,
                 'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'TweakClass': "org.spongepowered.asm.launch.MixinTweaker",
                 'TweakOrder': 0,
-                'MixinConfigs': "mixins.cchatmod.json"
+                'MixinConfigs': "mixins.cchatmod.json",
+                'MixinRefMap': "mixins.cchatmod.refmap.json",
+                "FMLCorePluginContainsFMLMod": "true",
+                "ForceLoadAsMod": "true"
         ])
     }
-
+    from {
+        sourceSets.main.resources.srcDirs.collect { it.exists() ? it : null }
+    } {
+        include 'mixins.cchatmod.refmap.json'
+    }
     // This is the preferred method to reobfuscate your jar file
     finalizedBy 'reobfJar'
 }
@@ -127,3 +136,7 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
 }
 
+mixin {
+    add sourceSets.main, 'mixins.cchatmod.refmap.json'
+    config 'mixins.cchatmod.json'
+}

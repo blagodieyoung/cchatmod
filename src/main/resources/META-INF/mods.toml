@@ -23,4 +23,5 @@ license="${mod_license}"
     ordering="NONE"
     side="BOTH"
 
-mixins="cchatmod.mixins.json"
+[[mixins]]
+mixins="mixins.cchatmod.json"
