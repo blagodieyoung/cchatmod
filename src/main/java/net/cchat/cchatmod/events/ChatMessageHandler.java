@@ -14,5 +14,6 @@ public class ChatMessageHandler {
         Minecraft.getInstance().execute(() -> {
             CChatModEvents.getInstance().addMessage(message, new ResourceLocation(CChatMod.MOD_ID, "textures/gui/default_icon.png"));
         });
+        event.setCanceled(true);
     }
 }
