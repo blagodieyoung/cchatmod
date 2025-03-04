@@ -28,6 +28,10 @@ public class ChatRenderer {
     }
 
     public void render(PoseStack poseStack, int screenWidth, int screenHeight, boolean isChatOpen, ChatHistoryManager chatHistoryManager) {
+        if (minecraft.player != null && minecraft.player.isSleeping()) {
+            return;
+        }
+
         if (isChatOpen) {
             poseStack.pushPose();
             ChatBackgroundRenderer.drawBackground(poseStack, screenWidth, screenHeight);

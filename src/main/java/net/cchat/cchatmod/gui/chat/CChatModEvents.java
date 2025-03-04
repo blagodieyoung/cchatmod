@@ -49,11 +49,6 @@ public class CChatModEvents {
         chatRenderer.render(poseStack, screenWidth, screenHeight, isChatOpen, chatHistoryManager);
     }
 
-    public boolean handleMouseScroll(double delta) {
-        chatHistoryManager.adjustScrollOffset(delta > 0 ? -1 : 1);
-        return true;
-    }
-
     public void adjustScrollOffset(int delta) {
         chatHistoryManager.adjustScrollOffset(delta);
     }

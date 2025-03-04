@@ -80,9 +80,5 @@ public class ChatHistoryManager {
         public ResourceLocation getIcon() {
             return icon;
         }
-
-        public long getEndTick() {
-            return endTick;
-        }
     }
 }

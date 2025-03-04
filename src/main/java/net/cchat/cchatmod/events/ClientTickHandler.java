@@ -14,7 +14,7 @@ public class ClientTickHandler {
         Minecraft minecraft = Minecraft.getInstance();
         boolean isChatOpen = minecraft.screen instanceof net.minecraft.client.gui.screens.ChatScreen;
         if (event.phase == TickEvent.Phase.END) {
-            if (isChatOpen && !isChatScreenReplaced) {
+            if (isChatOpen && !isChatScreenReplaced && (minecraft.player == null || !minecraft.player.isSleeping())) {
                 minecraft.setScreen(new CustomChatScreen("", CChatModEvents.getInstance()));
                 isChatScreenReplaced = true;
             } else if (!isChatOpen) {

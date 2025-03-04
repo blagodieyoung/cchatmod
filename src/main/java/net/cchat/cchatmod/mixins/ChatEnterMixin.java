@@ -18,16 +18,18 @@ public abstract class ChatEnterMixin {
 
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(PoseStack poseStack, int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        Minecraft minecraft = Minecraft.getInstance();
-        int screenWidth = minecraft.getWindow().getGuiScaledWidth();
-        int screenHeight = minecraft.getWindow().getGuiScaledHeight();
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isSleeping()) {
+            return;
+        }
+        int screenWidth = Minecraft.getInstance().getWindow().getGuiScaledWidth();
+        int screenHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int customWidth = 150;
         int customHeight = 22;
         int posX = (screenWidth - customWidth) / 2;
         int posY = screenHeight - 50;
 
         ci.cancel();
-        if (minecraft == null || this.input == null) {
+        if (Minecraft.getInstance() == null || this.input == null) {
             return;
         }
         this.input.setWidth(customWidth - 10);

@@ -7,8 +7,7 @@
   "mixins": [
     "ChatSystemMixin",
     "ChatListenerMixin",
-    "ChatEnterMixin",
-    "ChatOpenMixin"
+    "ChatEnterMixin"
   ],
   "injectors": {
     "defaultRequire": 1
