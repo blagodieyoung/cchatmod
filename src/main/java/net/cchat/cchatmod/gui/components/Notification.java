@@ -6,11 +6,11 @@ import net.minecraft.client.gui.screens.Screen;
 
 public class Notification {
     private final String message;
-    private final float duration; // Длительность уведомления в секундах
-    private final long creationTime; // Время создания уведомления (в мс)
+    private final float duration;
+    private final long creationTime;
     private static final float DESCEND_FRACTION = 0.83f;
-    private static final int START_Y = 10;  // Начальное положение
-    private static final int END_Y = 150;  // Конечное положение (примерно половина экрана)
+    private static final int START_Y = 10;
+    private static final int END_Y = 150;
 
     public Notification(String message, float duration) {
         this.message = message;
@@ -28,7 +28,7 @@ public class Notification {
     }
 
     public boolean isExpired() {
-        return getProgress() >= 0.9f; // Мгновенное исчезновение после 90% времени
+        return getProgress() >= 0.9f;
     }
 
     public void render(PoseStack poseStack, Font font) {
