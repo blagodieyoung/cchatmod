@@ -20,7 +20,7 @@ public class ChatHistoryManager {
         this.minecraft = minecraft;
     }
 
-    public void addMessage(String text, ResourceLocation icon) {
+    public synchronized void addMessage(String text, ResourceLocation icon) {
         long currentTick = getCurrentTick();
         currentMessage = new ChatMessage(text, icon, currentTick + displayTimeTicks);
         messageEndTick = currentTick + displayTimeTicks;
@@ -31,18 +31,18 @@ public class ChatHistoryManager {
         }
     }
 
-    public void clearHistory() {
+    public synchronized void clearHistory() {
         chatHistory.clear();
         historyScrollOffset = 0;
         currentMessage = null;
         messageEndTick = 0;
     }
 
-    public void adjustScrollOffset(int delta) {
+    public synchronized void adjustScrollOffset(int delta) {
         historyScrollOffset = Math.max(0, Math.min(historyScrollOffset + delta, chatHistory.size() - 1));
     }
 
-    public LinkedList<ChatMessage> getChatHistory() {
+    public synchronized LinkedList<ChatMessage> getChatHistory() {
         return chatHistory;
     }
 

@@ -23,7 +23,7 @@ public class CChatModEvents {
 
     private static CChatModEvents instance;
 
-    public static CChatModEvents getInstance() {
+    public static synchronized CChatModEvents getInstance() {
         if (instance == null) {
             instance = new CChatModEvents(Minecraft.getInstance());
         }
