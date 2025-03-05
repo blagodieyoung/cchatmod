@@ -2,15 +2,18 @@ package net.cchat.cchatmod.gui.components;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.screens.Screen;
 
 public class Notification {
     private final String message;
     private final float duration;
     private final long creationTime;
-    private static final float DESCEND_FRACTION = 0.83f;
+
     private static final int START_Y = 10;
     private static final int END_Y = 150;
+    private static final int SPACING = 5;
+
+    private static final int FADE_Y = 150;
+    private static final int FADE_RANGE = 20;
 
     public Notification(String message, float duration) {
         this.message = message;
@@ -24,41 +27,28 @@ public class Notification {
 
     public float getProgress() {
         long now = System.currentTimeMillis();
-        return Math.min((now - creationTime) / (duration * 1300f), 1.0f);
+        return Math.min((now - creationTime) / (duration * 1000f), 1.0f);
     }
 
     public boolean isExpired() {
-        return getProgress() >= 0.9f;
+        return getProgress() >= 1.0f;
     }
 
-    public void render(PoseStack poseStack, Font font) {
+    public void render(PoseStack poseStack, Font font, int index) {
         float progress = getProgress();
-        int currentY;
+        int currentY = START_Y + (int) ((END_Y - START_Y) * progress) + index * (font.lineHeight + SPACING);
 
-        if (progress < DESCEND_FRACTION) {
-            float t = progress / DESCEND_FRACTION;
-            float eased = 1 - (1 - t) * (1 - t);
-            currentY = START_Y + (int) ((END_Y - START_Y) * eased);
-        } else {
-            currentY = END_Y;
+        int textHeight = font.lineHeight;
+        int bottomY = currentY + textHeight;
+
+        int alpha = 255;
+        if (bottomY > FADE_Y) {
+            int overlap = bottomY - FADE_Y;
+            float fadeFactor = Math.min(1.0f, (float) overlap / FADE_RANGE);
+            alpha = (int) (255 * (1.0f - fadeFactor));
         }
 
-        if (progress >= 0.85f) {
-            return;
-        }
-
-        //int currentY = START_Y + (int)((END_Y - START_Y) * progress);
-
-        int bgColor = (6 << 24);
-
-        int padding = 4;
-        int textWidth = font.width(message);
-        int boxWidth = textWidth + padding * 2;
-        int boxHeight = font.lineHeight + padding * 2;
-        int boxX = 10;
-        int boxY = currentY;
-
-        Screen.fill(poseStack, boxX, boxY, boxX + boxWidth, boxY + boxHeight, bgColor);
-        font.drawShadow(poseStack, message, boxX + padding, boxY + padding, 0xFFFFFF);
+        int textColor = (alpha << 24) | 0xFFFFFF;
+        font.drawShadow(poseStack, message, 10, currentY, textColor);
     }
 }

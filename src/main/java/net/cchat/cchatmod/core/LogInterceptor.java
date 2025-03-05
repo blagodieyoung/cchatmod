@@ -15,8 +15,6 @@ public class LogInterceptor {
                 String message = event.getMessage().getFormattedMessage();
             }
         };
-
-        // Регистрируем аппендер
         appender.start();
         logger.addAppender(appender);
     }
