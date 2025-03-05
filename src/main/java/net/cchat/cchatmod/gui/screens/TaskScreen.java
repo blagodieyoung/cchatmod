@@ -208,7 +208,6 @@ public class TaskScreen extends Screen {
             int textAreaTop = offsetY + topTextureHeight + verticalPadding;
             int textAreaBottom = offsetY + detailHeight - bottomTextureHeight - verticalPadding;
             int visibleHeight = textAreaBottom - textAreaTop;
-
             int maxTextWidth = fillWidth - 20;
 
             int scaleFactor = (int) minecraft.getWindow().getGuiScale();
@@ -236,6 +235,7 @@ public class TaskScreen extends Screen {
                 }
             }
             currentY += 5;
+
             drawStringWithShadow(poseStack, font, "Описание:", fillX1 + 10, currentY, COLOR_TEXT);
             currentY += font.lineHeight + 2;
             String[] paragraphs = selectedTask.getDescription().split("\n");
@@ -313,7 +313,7 @@ public class TaskScreen extends Screen {
             if (scrollOffset < 0) {
                 scrollOffset = 0;
             }
-            int offsetY = (int) (this.height * 0.15f);
+            int offsetY = (int) (this.height * 0.10f);
             int detailHeight = this.height - 2 * offsetY;
             int topTextureHeight = 20;
             int bottomTextureHeight = 20;
@@ -322,16 +322,28 @@ public class TaskScreen extends Screen {
             int textAreaBottom = offsetY + detailHeight - bottomTextureHeight - verticalPadding;
             int visibleHeight = textAreaBottom - textAreaTop;
 
+            int rightPanelX = this.width / 4;
+            int availableWidthP = this.width - rightPanelX - 2 * PANEL_PADDING;
+            int detailWidth = (int) (availableWidthP * 0.8);
+            int detailX = rightPanelX + PANEL_PADDING + (availableWidthP - detailWidth) / 2;
+            int fillMargin = 10;
+            int fillX1 = detailX + fillMargin;
+            int fillX2 = detailX + detailWidth - fillMargin;
+            int fillWidth = fillX2 - fillX1;
+            int maxTextWidth = fillWidth - 20;
+
             int simulatedY = textAreaTop;
             simulatedY += font.lineHeight + 5;
             simulatedY += font.lineHeight + 2;
             for (String obj : selectedTask.getObjectives()) {
-                simulatedY += font.lineHeight + 2;
+                List<FormattedCharSequence> wrappedObj = font.split(Component.literal("- " + obj), maxTextWidth);
+                simulatedY += wrappedObj.size() * (font.lineHeight + 2);
             }
             simulatedY += 5;
             simulatedY += font.lineHeight + 2;
-            for (String line : selectedTask.getDescription().split("\n")) {
-                simulatedY += font.lineHeight + 2;
+            for (String paragraph : selectedTask.getDescription().split("\n")) {
+                List<FormattedCharSequence> wrappedLines = font.split(Component.literal(paragraph), maxTextWidth);
+                simulatedY += wrappedLines.size() * (font.lineHeight + 2);
             }
             int totalTextHeight = simulatedY - textAreaTop;
             if (scrollOffset > Math.max(totalTextHeight - visibleHeight, 0)) {
