@@ -12,7 +12,8 @@ public class ChatHistoryManager {
     private ChatMessage currentMessage = null;
     private long messageEndTick = 0;
     private final LinkedList<ChatMessage> chatHistory = new LinkedList<>();
-    private int historyScrollOffset = 0;
+    private int scrollPixelOffset = 0;
+    private static final int SCROLL_SPEED = 10;
 
     public ChatHistoryManager(int maxHistorySize, int displayTimeTicks, Minecraft minecraft) {
         this.maxHistorySize = maxHistorySize;
@@ -33,21 +34,25 @@ public class ChatHistoryManager {
 
     public synchronized void clearHistory() {
         chatHistory.clear();
-        historyScrollOffset = 0;
+        scrollPixelOffset = 0;
         currentMessage = null;
         messageEndTick = 0;
     }
 
     public synchronized void adjustScrollOffset(int delta) {
-        historyScrollOffset = Math.max(0, Math.min(historyScrollOffset + delta, chatHistory.size() - 1));
+        scrollPixelOffset += delta * SCROLL_SPEED;
     }
 
     public synchronized LinkedList<ChatMessage> getChatHistory() {
         return chatHistory;
     }
 
-    public int getHistoryScrollOffset() {
-        return historyScrollOffset;
+    public int getScrollPixelOffset() {
+        return scrollPixelOffset;
+    }
+
+    public synchronized void setScrollPixelOffset(int offset) {
+        this.scrollPixelOffset = offset;
     }
 
     public ChatMessage getCurrentMessage() {

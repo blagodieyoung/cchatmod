@@ -1,7 +1,7 @@
 package net.cchat.cchatmod.gui.chat;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import net.cchat.cchatmod.gui.chat.ChatHistoryManager.ChatMessage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -9,7 +9,7 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import static net.cchat.cchatmod.CChatMod.MOD_ID;
+import org.lwjgl.opengl.GL11;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +19,7 @@ public class ChatRenderer {
     private final Font font;
     private final float chatWidthRatio;
     private final int yOffset;
+    private final int fadeHeight = 20;
 
     public ChatRenderer(Minecraft minecraft, Font font, float chatWidthRatio, int yOffset) {
         this.minecraft = minecraft;
@@ -51,17 +52,73 @@ public class ChatRenderer {
     }
 
     private void renderChatHistory(PoseStack poseStack, int screenWidth, int screenHeight, int maxWidth, ChatHistoryManager chatHistoryManager) {
-        int topBoundary = (int) (screenHeight * 0.12f);
-        int yPosition = screenHeight + yOffset;
-        int maxVisibleMessages = screenHeight / 40;
-        int scrollOffset = chatHistoryManager.getHistoryScrollOffset();
-        LinkedList<ChatMessage> history = chatHistoryManager.getChatHistory();
+        int topBoundary = (int)(screenHeight * 0.12f);
+        int bottomY = screenHeight + yOffset;
+        int extraBottomMargin = 5;
+        int effectiveBottomY = bottomY + extraBottomMargin;
 
-        for (int i = history.size() - 1 - scrollOffset; i >= 0 && maxVisibleMessages > 0; i--, maxVisibleMessages--) {
-            ChatMessage message = history.get(i);
-            renderMessage(poseStack, message, screenWidth, yPosition, maxWidth);
-            yPosition -= calculateMessageHeight(message, maxWidth) + 10;
-            if (yPosition - calculateMessageHeight(message, maxWidth) < topBoundary) break;
+        int visibleHeight = bottomY - topBoundary;
+
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        int scaleFactor = (int)minecraft.getWindow().getGuiScale();
+        int scissorX = 0;
+        int scissorY = screenHeight - effectiveBottomY;
+        int scissorWidth = screenWidth;
+        int scissorHeight = effectiveBottomY - topBoundary;
+        GL11.glScissor(scissorX * scaleFactor, scissorY * scaleFactor, scissorWidth * scaleFactor, scissorHeight * scaleFactor);
+
+        LinkedList<ChatMessage> history = chatHistoryManager.getChatHistory();
+        int totalContentHeight = 0;
+        for (ChatMessage msg : history) {
+            int msgHeight = calculateMessageHeight(msg, maxWidth);
+            totalContentHeight += msgHeight + 10;
+        }
+        if (totalContentHeight > 0) {
+            totalContentHeight -= 10;
+        }
+
+        int maxScroll = Math.max(0, totalContentHeight - visibleHeight);
+        int scrollOffset = chatHistoryManager.getScrollPixelOffset();
+        if (scrollOffset > maxScroll) {
+            scrollOffset = maxScroll;
+            chatHistoryManager.setScrollPixelOffset(maxScroll);
+        }
+        if (scrollOffset < 0) {
+            scrollOffset = 0;
+            chatHistoryManager.setScrollPixelOffset(0);
+        }
+
+        int startY = bottomY - totalContentHeight + scrollOffset;
+        int currentY = startY;
+        for (ChatMessage message : history) {
+            int msgHeight = calculateMessageHeight(message, maxWidth);
+            int messageTop = currentY;
+            int messageBottom = currentY + msgHeight;
+            if (messageBottom >= topBoundary && messageTop <= bottomY) {
+                renderMessage(poseStack, message, screenWidth, currentY + msgHeight, maxWidth, topBoundary);
+            }
+            currentY += msgHeight + 10;
+        }
+
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+    }
+
+
+    private void renderMessage(PoseStack poseStack, ChatMessage message, int screenWidth, int yPosition, int maxWidth, int topBoundary) {
+        List<FormattedCharSequence> lines = font.split(Component.literal(message.getText()), maxWidth);
+        int panelWidth = calculatePanelWidth(lines);
+        int panelHeight = calculatePanelHeight(lines);
+        int xPosition = (screenWidth - panelWidth) / 2;
+
+        drawBackground(poseStack, xPosition, yPosition, panelWidth, panelHeight);
+        drawIcon(poseStack, message.getIcon(), xPosition, yPosition, panelHeight);
+        drawText(poseStack, lines, xPosition, yPosition, panelHeight);
+
+        int messageTop = yPosition - panelHeight;
+        if (messageTop < topBoundary) {
+            int fadeRegionHeight = topBoundary - messageTop;
+            fadeRegionHeight = Math.min(fadeRegionHeight, fadeHeight);
+            drawFadeOverlay(poseStack, xPosition, messageTop, panelWidth, topBoundary, fadeRegionHeight);
         }
     }
 
@@ -108,5 +165,25 @@ public class ChatRenderer {
     private int calculateMessageHeight(ChatMessage message, int maxWidth) {
         List<FormattedCharSequence> lines = font.split(Component.literal(message.getText()), maxWidth);
         return calculatePanelHeight(lines);
+    }
+
+    private void drawFadeOverlay(PoseStack poseStack, int x, int messageTop, int width, int topBoundary, int fadeRegionHeight) {
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
+        Tesselator tessellator = Tesselator.getInstance();
+        BufferBuilder buffer = tessellator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        float maxAlpha = 0.8f;
+        float yTop = messageTop;
+        float yBottom = messageTop + fadeRegionHeight;
+
+        buffer.vertex(x, yTop, 0).color(0, 0, 0, maxAlpha).endVertex();
+        buffer.vertex(x + width, yTop, 0).color(0, 0, 0, maxAlpha).endVertex();
+        buffer.vertex(x + width, yBottom, 0).color(0, 0, 0, 0f).endVertex();
+        buffer.vertex(x, yBottom, 0).color(0, 0, 0, 0f).endVertex();
+        tessellator.end();
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
     }
 }

@@ -1,5 +1,6 @@
 package net.cchat.cchatmod;
 
+import net.cchat.cchatmod.core.ModKeyBindings;
 import net.cchat.cchatmod.events.ChatMessageHandler;
 import net.cchat.cchatmod.events.ClientTickHandler;
 import net.cchat.cchatmod.events.KeyInputHandler;
@@ -13,7 +14,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
 
 @Mod(CChatMod.MOD_ID)
 @OnlyIn(Dist.CLIENT)
@@ -23,6 +23,7 @@ public class CChatMod {
 
     public CChatMod() {
         LogInterceptor.init();
+
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onClientSetup);
 
         MinecraftForge.EVENT_BUS.register(new ChatMessageHandler());
@@ -34,6 +35,7 @@ public class CChatMod {
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ModKeyBindings::registerKeys);
         CChatModEvents.getInstance();
     }
 }
