@@ -24,13 +24,14 @@ public class ChatHistoryManager {
     }
 
     public synchronized void addMessage(Component text, ResourceLocation icon) {
+        long currentTick = getCurrentTick();
         currentMessage = new ChatMessage(text, icon, currentTick + displayTimeTicks);
+        messageEndTick = currentTick + displayTimeTicks;
         chatHistory.addLast(currentMessage);
 
         if (chatHistory.size() > maxHistorySize) {
             chatHistory.removeFirst();
         }
-        currentTick = minecraft.level != null ? minecraft.level.getGameTime() : System.currentTimeMillis();
     }
 
     public synchronized void clearHistory() {
@@ -61,11 +62,11 @@ public class ChatHistoryManager {
     }
 
     public long getMessageEndTick() {
-        return currentTick + displayTimeTicks;
+        return messageEndTick;
     }
 
     public long getCurrentTick() {
-        return currentTick;
+        return minecraft.level != null ? minecraft.level.getGameTime() : 0;
     }
 
     public static class ChatMessage {
