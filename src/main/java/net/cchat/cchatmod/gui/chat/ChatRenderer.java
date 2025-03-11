@@ -105,7 +105,7 @@ public class ChatRenderer {
 
 
     private void renderMessage(PoseStack poseStack, ChatMessage message, int screenWidth, int yPosition, int maxWidth, int topBoundary) {
-        List<FormattedCharSequence> lines = font.split(Component.literal(message.getText()), maxWidth);
+        List<FormattedCharSequence> lines = font.split(message.getText(), maxWidth);
         int panelWidth = calculatePanelWidth(lines);
         int panelHeight = calculatePanelHeight(lines);
         int xPosition = (screenWidth - panelWidth) / 2;
@@ -123,7 +123,7 @@ public class ChatRenderer {
     }
 
     private void renderMessage(PoseStack poseStack, ChatMessage message, int screenWidth, int yPosition, int maxWidth) {
-        List<FormattedCharSequence> lines = font.split(Component.literal(message.getText()), maxWidth);
+        List<FormattedCharSequence> lines = font.split(message.getText(), maxWidth);
         int panelWidth = calculatePanelWidth(lines);
         int panelHeight = calculatePanelHeight(lines);
         int xPosition = (screenWidth - panelWidth) / 2;
@@ -149,7 +149,7 @@ public class ChatRenderer {
         int totalTextHeight = lines.size() * 12;
         int textY = yPosition - panelHeight + (panelHeight - totalTextHeight) / 2 + 2;
         for (FormattedCharSequence line : lines) {
-            font.draw(poseStack, line, textX, textY, 0xFFFFFF);
+            font.draw(poseStack, line, textX, textY, -1);
             textY += 12;
         }
     }
@@ -163,7 +163,7 @@ public class ChatRenderer {
     }
 
     private int calculateMessageHeight(ChatMessage message, int maxWidth) {
-        List<FormattedCharSequence> lines = font.split(Component.literal(message.getText()), maxWidth);
+        List<FormattedCharSequence> lines = font.split(message.getText(), maxWidth);
         return calculatePanelHeight(lines);
     }
 

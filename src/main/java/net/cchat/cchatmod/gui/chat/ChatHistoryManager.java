@@ -1,6 +1,7 @@
 package net.cchat.cchatmod.gui.chat;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import java.util.LinkedList;
 
@@ -14,6 +15,7 @@ public class ChatHistoryManager {
     private final LinkedList<ChatMessage> chatHistory = new LinkedList<>();
     private int scrollPixelOffset = 0;
     private static final int SCROLL_SPEED = 10;
+    private long currentTick = 0;
 
     public ChatHistoryManager(int maxHistorySize, int displayTimeTicks, Minecraft minecraft) {
         this.maxHistorySize = maxHistorySize;
@@ -21,15 +23,14 @@ public class ChatHistoryManager {
         this.minecraft = minecraft;
     }
 
-    public synchronized void addMessage(String text, ResourceLocation icon) {
-        long currentTick = getCurrentTick();
+    public synchronized void addMessage(Component text, ResourceLocation icon) {
         currentMessage = new ChatMessage(text, icon, currentTick + displayTimeTicks);
-        messageEndTick = currentTick + displayTimeTicks;
         chatHistory.addLast(currentMessage);
 
         if (chatHistory.size() > maxHistorySize) {
             chatHistory.removeFirst();
         }
+        currentTick = minecraft.level != null ? minecraft.level.getGameTime() : System.currentTimeMillis();
     }
 
     public synchronized void clearHistory() {
@@ -60,25 +61,23 @@ public class ChatHistoryManager {
     }
 
     public long getMessageEndTick() {
-        return messageEndTick;
+        return currentTick + displayTimeTicks;
     }
 
     public long getCurrentTick() {
-        return minecraft.level != null ? minecraft.level.getGameTime() : 0;
+        return currentTick;
     }
 
     public static class ChatMessage {
-        private final String text;
+        private final Component text;
         private final ResourceLocation icon;
-        private final long endTick;
 
-        public ChatMessage(String text, ResourceLocation icon, long endTick) {
+        public ChatMessage(Component text, ResourceLocation icon, long endTick) {
             this.text = text;
             this.icon = icon;
-            this.endTick = endTick;
         }
 
-        public String getText() {
+        public Component getText() {
             return text;
         }
 

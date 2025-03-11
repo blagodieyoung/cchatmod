@@ -10,11 +10,11 @@ import java.util.List;
 public class ModKeyBindings {
     private static final List<KeyMapping> KEY_BINDINGS = new ArrayList<>();
 
-    public static final KeyMapping OPEN_TASK_SCREEN = register(new KeyMapping(
+    public static final KeyMapping OPEN_TASK_SCREEN = new KeyMapping(
             "key.cchatmod.opentasks",
             GLFW.GLFW_KEY_M,
             "key.categories.cchatmod.custom"
-    ));
+    );
 
     private static KeyMapping register(KeyMapping keyMapping) {
         KEY_BINDINGS.add(keyMapping);
